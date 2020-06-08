@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <title> Todo App</title>
+    </head>
+    <body>
+
+        <form action='todos/create/' method='post'>
+            <input type="text" name="description"/>
+            <input type="submit" value="Create item"/>
+        </form>
+
+        <ul>
+            {% for d in data %}
+                <li>{{d.description}}</li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
