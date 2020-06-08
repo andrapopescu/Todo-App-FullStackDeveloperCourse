@@ -1,4 +1,6 @@
-from flask import Flask, jsonify, render_template, request
+import sys
+
+from flask import Flask, abort, jsonify, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -26,10 +28,21 @@ def index():
 
 @app.route('/todos/create/', methods=['POST'])
 def create_todo_item():
-    description = request.get_json().get('description', '')
-    todo = Todo(description=description)
-    db.session.add(todo)
-    db.session.commit()
-    return jsonify({
-        'description': todo.description,
-    })
+    error = False
+    body = {}
+    try:
+        description = request.get_json().get('description', '')
+        todo = Todo(description=description)
+        db.session.add(todo)
+        db.session.commit()
+        body['description'] = todo.description
+    except:
+        error = True
+        db.session.rollback()
+        print(sys.exec_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(400)
+    else:
+        return jsonify(body)
