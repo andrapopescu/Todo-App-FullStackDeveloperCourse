@@ -10,13 +10,26 @@
                 list-style: none;
                 padding: 0;
                 margin: 0;
-                width: 300px;
+                width: 240px;
+            }
+            li {
+                clear: both;
+            }
+            li button {
+                -webkit-appearance: none;
+                background-color: transparent;
+                border: none;
+                outline: none;
+                color: red;
+                float: right;
+                cursor: pointer;
+                font-size: 20px;
             }
         </style>
     </head>
 
     <body>
-        <form id='form'>
+        <form id='form' method='post', action='todos/create/'>
             <input type='text' id='description' name='description'/>
             <input type='submit' value='Create Item'/>
         </form>
@@ -32,6 +45,7 @@
                         {% if d.completed %} checked {% endif %}
                     />
                     {{d.description}}
+                    <button id='delete-button' data-id='{{d.id}}'>&cross;</button>
                 </li>
             {% endfor %}
         </ul>
@@ -58,6 +72,21 @@
                     })
                     .catch(() => {
                         document.getElementById('error').className = '';
+                    });
+                }
+            }
+
+            const deleteButtons = document.querySelectorAll('#delete-button');
+            for(let i = 0; i < deleteButtons.length; i++) {
+                const deleteButton = deleteButtons[i];
+                deleteButton.onclick = function(e){
+                    const todoId = e.target.dataset['id'];
+                    fetch('todos/' + todoId + '/', {
+                        method: 'DELETE',
+                    })
+                    .then(function() {
+                        const item = e.target.parentElement;
+                        item.remove();
                     });
                 }
             }
